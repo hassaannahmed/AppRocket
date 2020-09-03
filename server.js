@@ -8,13 +8,12 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-const router = require('./routes/api/router');
-
 connectDB();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/api/router/', require('./routes/api/router'));
+app.use('/api/users/', require('./routes/api/users'));
 
 app.use(express.static(__dirname));
 
