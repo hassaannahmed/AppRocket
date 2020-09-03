@@ -11,7 +11,9 @@
   "author": "Hassaan Ahmed",
   "license": "ISC",
   "dependencies": {
+    "config": "^3.3.1",
     "express": "^4.17.1",
+    "mongoose": "^5.10.2",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
