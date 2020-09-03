@@ -26,10 +26,10 @@ io.on('connection', (socket) => {
 
   socket.emit('hello', 'emitted message');
 
-  socket.emit('hello', 'emitted message');
+  socket.broadcast.emit('message', 'New User Joined!');
 
   socket.on('disconnect', () => {
-    console.log('user disconnected');
+    io.emit('message', 'user disconnected');
   });
 });
 

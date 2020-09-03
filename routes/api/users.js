@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../../models/User');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 
 // @route POST api/users/
 // @desc Register User
@@ -22,10 +23,14 @@ router.post('/', async (req, res) => {
       password,
     });
 
+    // Encrypting
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(password, salt);
+
     // Saves to Database
     await user.save();
 
-    return res.json({ msg: 'User Created', data: user });
+    return res.json({ msg: 'User Created', data: { id: user._id } });
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -46,11 +51,13 @@ router.post('/login/', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid Credentials' });
     }
 
-    if (user.password == password) {
-      return res.json({ msg: 'User logged in', data: user });
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.json({ msg: 'Invalid Credentials' });
     }
 
-    return res.json({ msg: 'Invalid Credentials' });
+    return res.json({ msg: 'User logged in', data: { id: user._id } });
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
