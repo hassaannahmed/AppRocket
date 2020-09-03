@@ -43,19 +43,14 @@ router.post('/login/', async (req, res) => {
 
     // Checks if user with username present
     if (!user) {
-      return res.json({ msg: 'Invalid Credentials' });
+      return res.status(400).json({ msg: 'Invalid Credentials' });
     }
 
-    // Creates new User
-    user = new User({
-      username,
-      password,
-    });
+    if (user.password == password) {
+      return res.json({ msg: 'User logged in', data: user });
+    }
 
-    // Saves to Database
-    await user.save();
-
-    return res.json({ msg: 'User Created', data: user });
+    return res.json({ msg: 'Invalid Credentials' });
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
