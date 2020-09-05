@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// @route GET api/users/login
+// @route POST api/users/login
 // @desc Login User
 // @access Public
 router.post('/login/', async (req, res) => {
@@ -54,10 +54,26 @@ router.post('/login/', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.json({ msg: 'Invalid Credentials' });
+      return res.status(400).json({ msg: 'Invalid Credentials' });
     }
 
     return res.json({ msg: 'User logged in', data: { id: user._id } });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+// @route GET api/users/getAll
+// @desc Get All Users
+// @access Public
+router.post('/getAll/', async (req, res) => {
+  const { username } = req.body;
+  try {
+    let users = await User.find();
+    users = users.filter((user) => user.username != username);
+
+    return res.json({ data: users.map((user) => user.username) });
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
