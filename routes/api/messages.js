@@ -19,8 +19,19 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid Credentials' });
     }
 
-    let conversations = await Conversation.find({ members: { $in: id } });
+    let conversations = await Conversation.find({
+      members: { $in: id },
+    }).populate('members');
+    conversations = conversations.filter((conversation) => {
+      if (!conversation.conversationName) {
+        // If Conversation has no name
+        let convoMembers = conversation.members;
 
+        let otherMember = convoMembers.find((member) => member._id != id);
+        conversation.conversationName = otherMember.username;
+      }
+      return conversation;
+    });
     return res.json(conversations);
   } catch (err) {
     console.log(err);
@@ -79,7 +90,7 @@ router.post('/messages/new', async (req, res) => {
 });
 
 // @route POST api/conversations/new
-// @desc Create New Coversations
+// @desc Create New Coversation
 router.post('/new', async (req, res) => {
   const { id, members } = req.body;
 
