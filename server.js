@@ -1,11 +1,12 @@
-const express = require('express');
+const express = require('express'),
+  app = express(),
+  server = require('http').createServer(app),
+  io = require('socket.io').listen(server);
 const socketio = require('socket.io');
 const http = require('http');
 const path = require('path');
 const connectDB = require('./config/db');
 const cors = require('cors');
-
-const app = express();
 
 const PORT = process.env.PORT || 5000;
 
@@ -19,10 +20,6 @@ app.use('/api/users/', require('./routes/api/users'));
 app.use('/api/conversations/', require('./routes/api/messages'));
 
 app.use(express.static(__dirname));
-
-// Socket.io
-const server = http.createServer(app);
-const io = socketio(server);
 
 io.on('connection', (socket) => {
   socket.on('joinRoom', (data) => {
