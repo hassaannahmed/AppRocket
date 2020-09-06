@@ -25,11 +25,20 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 io.on('connection', (socket) => {
+  socket.on('joinRoom', (data) => {
+    const { userId, room } = data;
+    socket.join(room);
+
+    socket.broadcast.to(room).emit('servermessage', 'User Connected');
+  });
   console.log('a user connected');
 
-  socket.emit('hello', 'emitted message');
-
-  socket.broadcast.emit('message', 'New User Joined!');
+  socket.on('chatMessage', (data) => {
+    console.log('got data');
+    console.log(data);
+    const { id, conversationId, msgText } = data;
+    io.to(conversationId).emit('message', data);
+  });
 
   socket.on('disconnect', () => {
     io.emit('message', 'user disconnected');
